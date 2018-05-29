@@ -2,3 +2,5 @@ node_modules
 lib
 index.js
 test.js
+dist
+.DS_Store
