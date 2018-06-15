@@ -141,12 +141,17 @@ module.exports = class Pomelo extends EventEmitter {
         this.initCallback = cb;
         
         this.params = params;
-        const {host, port, user, handshakeCallback, encode = defaultEncode, decode = defaultDecode} = params;
+        const {host, port, user, handshakeCallback, encode = defaultEncode, decode = defaultDecode, debugMode} = params;
 
         this.encode = encode;
         this.decode = decode;
         
-        this.url = this.urlGenerator(host, port);
+        if (debugMode) {
+            this.url = defaultUrlGenerator(host, port);
+        }
+        else {
+            this.url = this.urlGenerator(host, port);
+        }
     
         this.handshakeBuffer.user = user;
         this.handshakeCallback = handshakeCallback;

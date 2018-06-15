@@ -13,9 +13,19 @@ npm install pomelo-weixin-client
 ```js
 const pomelo = require('pomelo-weixin-client');
 
+// 普通模式，用于生产环境，会生成wss://example.com/ws/3005类似的地址，需要nginx支持
 pomelo.init({
     host: host,
     port: port
+}, function() {
+    console.log('success');
+});
+
+// 调试模式，用于本地开发，生成普通链接ws://example.com:3005
+pomelo.init({
+    host: host,
+    port: port,
+    debugMode: true
 }, function() {
     console.log('success');
 });
