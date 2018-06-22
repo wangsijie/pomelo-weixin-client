@@ -187,7 +187,7 @@ module.exports = class Pomelo extends EventEmitter {
             if (!!params.reconnect && this.reconnectAttempts < maxReconnectAttempts) {
                 this.reconnect = true;
                 this.reconnectAttempts++;
-                this.reconncetTimer = setTimeout(() => this.connect(), reconnectionDelay);
+                this.reconncetTimer = setTimeout(() => this.connect(), this.reconnectionDelay);
                 this.reconnectionDelay *= 2;
             }
         };
