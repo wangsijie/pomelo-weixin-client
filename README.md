@@ -8,6 +8,10 @@ pomelo客户端的微信小程序实现
 npm install pomelo-weixin-client
 ```
 
+或者使用单文件版，移步[releases](https://github.com/wangsijie/pomelo-weixin-client/releases)
+
+单文件版无需使用npm，支持AMD/CMD等打包方式，可以直接require
+
 ## 使用
 
 ```js
