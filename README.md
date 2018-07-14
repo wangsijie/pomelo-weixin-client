@@ -33,6 +33,9 @@ pomelo.init({
 }, function() {
     console.log('success');
 });
+
+// 如果需要多个连接实例，可以用newInstance方法生成
+const pomelo2 = pomelo.newInstance();
 ```
 
 具体使用方法见官方的[websocket](https://github.com/pomelonode/pomelo-jsclient-websocket)版本客户端说明

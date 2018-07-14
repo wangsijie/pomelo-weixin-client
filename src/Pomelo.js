@@ -276,4 +276,10 @@ module.exports = class Pomelo extends EventEmitter {
             this.handlers[msgs.type](msgs.body);
         }
     }
+    newInstance() {
+        return new Pomelo({
+            wsCreator: this.wsCreator,
+            urlGenerator: this.urlGenerator
+        });
+    }
 }
