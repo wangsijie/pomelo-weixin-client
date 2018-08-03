@@ -1,5 +1,4 @@
 const {copyArray} = require('./util');
-// const {TextDecoder} = require('text-encoding');
 
 module.exports = class Protocol {
     /**
@@ -39,28 +38,26 @@ module.exports = class Protocol {
      */
     static strdecode(buffer) {
         var bytes = new Uint8Array(buffer);
-        if (wx && typeof wx.arrayBufferToBase64 === 'function') {
-            var base64 = wx.arrayBufferToBase64(bytes);
-            return atob(base64);
-        } else {
-            var array = [];
-            var offset = 0;
-            var charCode = 0;
-            var end = bytes.length;
-            while (offset < end) {
-                if (bytes[offset] < 128) {
-                    charCode = bytes[offset];
-                    offset += 1;
-                } else if (bytes[offset] < 224) {
-                    charCode = ((bytes[offset] & 0x3f) << 6) + (bytes[offset + 1] & 0x3f);
-                    offset += 2;
-                } else {
-                    charCode = ((bytes[offset] & 0x0f) << 12) + ((bytes[offset + 1] & 0x3f) << 6) + (bytes[offset + 2] & 0x3f);
-                    offset += 3;
-                }
-                array.push(charCode);
+        var array = [];
+        var offset = 0;
+        var charCode = 0;
+        var end = bytes.length;
+        while (offset < end) {
+            if (bytes[offset] < 128) {
+                charCode = bytes[offset];
+                offset += 1;
+            } else if (bytes[offset] < 224) {
+                charCode = ((bytes[offset] & 0x3f) << 6) + (bytes[offset + 1] & 0x3f);
+                offset += 2;
+            } else if (bytes[offset] < 240) {
+                charCode = ((bytes[offset] & 0x0f) << 12) + ((bytes[offset + 1] & 0x3f) << 6) + (bytes[offset + 2] & 0x3f);
+                offset += 3;
+            } else if (bytes[offset] < 256) {
+                charCode = ((bytes[offset] & 0x07) << 18) + ((bytes[offset + 1] & 0x3f) << 12) + ((bytes[offset + 2] & 0x3f) << 6) + (bytes[offset + 3] & 0x3f);
+                offset += 4;
             }
-            return String.fromCharCode.apply(null, array);
+            array.push(charCode);
         }
+        return String.fromCodePoint ? String.fromCodePoint.apply(null, array) : String.fromCharCode.apply(null, array);
     };
 }
