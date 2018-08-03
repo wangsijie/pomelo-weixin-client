@@ -1,4 +1,5 @@
 const {copyArray} = require('./util');
+// const {TextDecoder} = require('text-encoding');
 
 module.exports = class Protocol {
     /**
@@ -37,25 +38,29 @@ module.exports = class Protocol {
      * return Message Object
      */
     static strdecode(buffer) {
-
         var bytes = new Uint8Array(buffer);
-        var array = [];
-        var offset = 0;
-        var charCode = 0;
-        var end = bytes.length;
-        while (offset < end) {
-            if (bytes[offset] < 128) {
-                charCode = bytes[offset];
-                offset += 1;
-            } else if (bytes[offset] < 224) {
-                charCode = ((bytes[offset] & 0x3f) << 6) + (bytes[offset + 1] & 0x3f);
-                offset += 2;
-            } else {
-                charCode = ((bytes[offset] & 0x0f) << 12) + ((bytes[offset + 1] & 0x3f) << 6) + (bytes[offset + 2] & 0x3f);
-                offset += 3;
+        if (wx && typeof wx.arrayBufferToBase64 === 'function') {
+            var base64 = wx.arrayBufferToBase64(bytes);
+            return atob(base64);
+        } else {
+            var array = [];
+            var offset = 0;
+            var charCode = 0;
+            var end = bytes.length;
+            while (offset < end) {
+                if (bytes[offset] < 128) {
+                    charCode = bytes[offset];
+                    offset += 1;
+                } else if (bytes[offset] < 224) {
+                    charCode = ((bytes[offset] & 0x3f) << 6) + (bytes[offset + 1] & 0x3f);
+                    offset += 2;
+                } else {
+                    charCode = ((bytes[offset] & 0x0f) << 12) + ((bytes[offset + 1] & 0x3f) << 6) + (bytes[offset + 2] & 0x3f);
+                    offset += 3;
+                }
+                array.push(charCode);
             }
-            array.push(charCode);
+            return String.fromCharCode.apply(null, array);
         }
-        return String.fromCharCode.apply(null, array);
     };
 }

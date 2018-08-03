@@ -245,6 +245,7 @@ module.exports = class Pomelo extends EventEmitter {
     }
     send(packet) {
         this.socket.send({ data: packet.buffer });
+        // this.socket.send(packet.buffer);
     }
     onData(msg) {
         msg = this.decode(msg);
