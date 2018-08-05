@@ -12,6 +12,15 @@ const RES_OK = 200;
 const RES_FAIL = 500;
 const RES_OLD_CLIENT = 501;
 
+function blobToBuffer(blob, cb) {
+    const fileReader = new FileReader();
+    fileReader.onload = (event) => {
+        const buffer = event.target.result;
+        cb(buffer);
+    };
+    fileReader.readAsArrayBuffer(blob);
+}
+
 function defaultDecode(data) {
     const msg = Message.decode(data);
     msg.body = JSON.parse(Protocol.strdecode(msg.body));
@@ -34,8 +43,9 @@ function defaultUrlGenerator(host, port) {
 module.exports = class Pomelo extends EventEmitter {
     constructor(args) {
         super(args);
-        const {wsCreator, urlGenerator = defaultUrlGenerator} = args;
+        const {wsCreator, wsCreatorWeb, urlGenerator = defaultUrlGenerator} = args;
         this.wsCreator = wsCreator;
+        this.wsCreatorWeb = wsCreatorWeb;
         this.urlGenerator = urlGenerator;
 
         this.reconnect = false;
@@ -141,7 +151,7 @@ module.exports = class Pomelo extends EventEmitter {
         this.initCallback = cb;
         
         this.params = params;
-        const {host, port, user, handshakeCallback, encode = defaultEncode, decode = defaultDecode, debugMode} = params;
+        const {host, port, user, handshakeCallback, encode = defaultEncode, decode = defaultDecode, debugMode, browserWS} = params;
 
         this.encode = encode;
         this.decode = decode;
@@ -151,6 +161,11 @@ module.exports = class Pomelo extends EventEmitter {
         }
         else {
             this.url = this.urlGenerator(host, port);
+        }
+
+        if (browserWS) {
+            this.wsCreator = this.wsCreatorWeb;
+            this.browserWS = browserWS;
         }
     
         this.handshakeBuffer.user = user;
@@ -171,10 +186,20 @@ module.exports = class Pomelo extends EventEmitter {
             this.send(obj);
         };
         const onMessage = event => {
-            this.processPackage(Package.decode(event.data));
-            // new package arrived, update the heartbeat timeout
-            if (this.heartbeatTimeout) {
-                this.nextHeartbeatTimeout = Date.now() + this.heartbeatTimeout;
+            if (this.browserWS) {
+                blobToBuffer(event.data, (buffer) => {
+                    this.processPackage(Package.decode(buffer));
+                    // new package arrived, update the heartbeat timeout
+                    if (this.heartbeatTimeout) {
+                        this.nextHeartbeatTimeout = Date.now() + this.heartbeatTimeout;
+                    }
+                });
+            } else {
+                this.processPackage(Package.decode(event.data));
+                // new package arrived, update the heartbeat timeout
+                if (this.heartbeatTimeout) {
+                    this.nextHeartbeatTimeout = Date.now() + this.heartbeatTimeout;
+                }
             }
         };
         const onError = event => {
@@ -244,8 +269,11 @@ module.exports = class Pomelo extends EventEmitter {
         this.send(packet);
     }
     send(packet) {
-        this.socket.send({ data: packet.buffer });
-        // this.socket.send(packet.buffer);
+        if (this.browserWS) {
+            this.socket.send(packet.buffer);
+        } else {
+            this.socket.send({ data: packet.buffer });
+        }
     }
     onData(msg) {
         msg = this.decode(msg);

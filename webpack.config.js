@@ -5,6 +5,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'pomelo-wexin-client.js',
+        library: 'pomelo',
         libraryTarget: "umd"
     }
 };

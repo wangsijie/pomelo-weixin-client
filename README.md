@@ -34,6 +34,16 @@ pomelo.init({
     console.log('success');
 });
 
+// 浏览器调试模式，用于本地开发，使用浏览器原生WebSocket，生成普通链接ws://example.com:3005
+pomelo.init({
+    host: host,
+    port: port,
+    debugMode: true,
+    browserWS: true
+}, function() {
+    console.log('success');
+});
+
 // 如果需要多个连接实例，可以用newInstance方法生成
 const pomelo2 = pomelo.newInstance();
 ```

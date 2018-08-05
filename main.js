@@ -1,5 +1,5 @@
 const Pomelo = require('./lib/Pomelo');
-// const WebSocket = require('ws');
+// const WS = require('ws');
 
 function wsCreator({url, onError, onOpen, onMessage, onClose}) {
     const ws = wx.connectSocket({url:url});
@@ -10,14 +10,14 @@ function wsCreator({url, onError, onOpen, onMessage, onClose}) {
     return ws;
 }
 
-// function wsCreator({url, onError, onOpen, onMessage, onClose}) {
-//     const ws = new WebSocket(url);
-//     ws.onerror = onError;
-//     ws.onopen = onOpen;
-//     ws.onmessage = onMessage;
-//     ws.onclose = onClose;
-//     return ws;
-// }
+function wsCreatorWeb({url, onError, onOpen, onMessage, onClose}) {
+    const ws = new WebSocket(url);
+    ws.onerror = onError;
+    ws.onopen = onOpen;
+    ws.onmessage = onMessage;
+    ws.onclose = onClose;
+    return ws;
+}
 
 function urlGenerator(host, port) {
     let url = 'wss://' + host;
@@ -29,5 +29,6 @@ function urlGenerator(host, port) {
 
 module.exports = new Pomelo({
     wsCreator,
+    wsCreatorWeb,
     urlGenerator
 });
