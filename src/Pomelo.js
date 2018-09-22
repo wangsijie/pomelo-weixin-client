@@ -308,6 +308,7 @@ module.exports = class Pomelo extends EventEmitter {
     newInstance() {
         return new Pomelo({
             wsCreator: this.wsCreator,
+            wsCreatorWeb: this.wsCreatorWeb,
             urlGenerator: this.urlGenerator
         });
     }
