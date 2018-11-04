@@ -13,6 +13,13 @@ const RES_FAIL = 500;
 const RES_OLD_CLIENT = 501;
 
 function blobToBuffer(blob, cb) {
+    if (process.env.NODE_ENV !== 'production') {
+        const toBuffer = require('blob-to-buffer');
+        if (Buffer.isBuffer(blob)) {
+            return cb(blob);
+        }
+        return toBuffer(blob, cb);
+    }
     const fileReader = new FileReader();
     fileReader.onload = (event) => {
         const buffer = event.target.result;

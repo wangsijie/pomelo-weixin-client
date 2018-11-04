@@ -1,5 +1,4 @@
-const Pomelo = require('./lib/Pomelo');
-// const WS = require('ws');
+const Pomelo = require('./Pomelo');
 
 function wsCreator({url, onError, onOpen, onMessage, onClose}) {
     const ws = wx.connectSocket({url:url});
@@ -11,6 +10,9 @@ function wsCreator({url, onError, onOpen, onMessage, onClose}) {
 }
 
 function wsCreatorWeb({url, onError, onOpen, onMessage, onClose}) {
+    if (process.env.NODE_ENV !== 'production') {
+        WebSocket = require('ws');
+    }
     const ws = new WebSocket(url);
     ws.onerror = onError;
     ws.onopen = onOpen;
