@@ -293,6 +293,7 @@ module.exports = class Pomelo extends EventEmitter {
     }
     processMessage(msg) {
         if (!msg.id) {
+            this.emit('onMessage', msg.route, msg.body);
             this.emit(msg.route, msg.body);
             return;
         }

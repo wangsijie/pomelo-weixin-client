@@ -50,6 +50,16 @@ const pomelo2 = pomelo.newInstance();
 
 具体使用方法见官方的[websocket](https://github.com/pomelonode/pomelo-jsclient-websocket)版本客户端说明
 
+额外增加的功能：
+
+全局监听消息（排除已用request设置回调的消息）
+
+```js
+pomelo.on('onMessage', data => {
+    console.log('onMessage', data)
+});
+```
+
 ## 特别说明
 
 微信仅支持wss连接（https）并且不支持自定义端口号，因此在服务器端进行额外的处理
