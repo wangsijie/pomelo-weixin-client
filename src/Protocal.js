@@ -58,6 +58,15 @@ module.exports = class Protocol {
             }
             array.push(charCode);
         }
-        return String.fromCodePoint ? String.fromCodePoint.apply(null, array) : String.fromCharCode.apply(null, array);
+        // 分片处理避免无法解析过大的数据（原因暂未确认 #8）
+        var charDecoder = String.fromCodePoint ? String.fromCodePoint : String.fromCharCode;
+        var result = '';
+        var chunk = 8 * 1024;
+        var i;
+        for (i = 0; i < array.length / chunk; i++) {
+            result += charDecoder.apply(null, array.slice(i * chunk, (i + 1) * chunk));
+        }
+        result += charDecoder.apply(null, array.slice(i * chunk));
+        return result;
     };
 }
